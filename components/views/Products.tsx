@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Package, Plus, AlertTriangle, Check } from 'lucide-react';
+import { Package, Plus, AlertTriangle, Check, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAppStore, money, Product } from '@/components/providers/AppProvider';
 
 function ProductRow({ product, index }: { product: Product, index: number }) {
-  const { setCart, setNotice } = useAppStore();
+  const { setCart, setNotice, setProducts } = useAppStore();
 
   const handleAdd = () => {
     if (!product.stock) {
@@ -15,6 +15,13 @@ function ProductRow({ product, index }: { product: Product, index: number }) {
     }
     setCart((prev) => [...prev, product]);
     setNotice(`${product.name} added to bill.`);
+  };
+
+  const handleDelete = () => {
+    if (confirm(`Are you sure you want to delete ${product.name}?`)) {
+      setProducts((prev) => prev.filter((p) => p.id !== product.id));
+      setNotice(`${product.name} deleted successfully.`);
+    }
   };
 
   return (
@@ -54,10 +61,22 @@ function ProductRow({ product, index }: { product: Product, index: number }) {
         )}
       </td>
       <td>
-        <motion.button className="mini-add" onClick={handleAdd} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-          <Plus size={14} />
-          Add
-        </motion.button>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <motion.button className="mini-add" onClick={handleAdd} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+            <Plus size={14} />
+            Add
+          </motion.button>
+          <motion.button 
+            className="mini-add" 
+            style={{ color: '#dc2626', borderColor: '#fca5a5', backgroundColor: '#fef2f2' }}
+            onClick={handleDelete} 
+            whileHover={{ scale: 1.1 }} 
+            whileTap={{ scale: 0.9 }}
+            title="Delete Product"
+          >
+            <Trash2 size={14} />
+          </motion.button>
+        </div>
       </td>
     </motion.tr>
   );
