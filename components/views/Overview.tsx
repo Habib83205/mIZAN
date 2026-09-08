@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowUpRight, ShoppingBag, WalletCards, Package, AlertTriangle, ScanLine, Truck, Search, Download, ArrowRight } from 'lucide-react';
+import { ArrowUpRight, ShoppingBag, WalletCards, Package, AlertTriangle, ScanLine, Truck, Search, Download, ArrowRight, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { money, useAppStore } from '@/components/providers/AppProvider';
 
@@ -13,149 +13,55 @@ const compareData = {
 
 type CompareMonth = keyof typeof compareData;
 
-function LineComparison({ month, setMonth }: { month: CompareMonth; setMonth: (value: CompareMonth) => void }) {
+function SalesBars({ month, setMonth }: { month: CompareMonth; setMonth: (value: CompareMonth) => void }) {
   const values = compareData[month];
-  const points = values.map((value, index) => `${index * 52 + 8},${112 - value}`).join(' ');
-
+  const labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7'];
+  const [hovered, setHovered] = useState(6);
+  
   return (
-    <>
-      <motion.section 
-        className="panel compare-panel"
-        whileHover={{ y: -3, boxShadow: "0 12px 28px rgba(28,28,28,.055)" }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      >
-        <div className="panel-heading">
-          <div>
-            <span className="section-number">01 / SALES COMPARISON</span>
-            <h2>Growth against last month<span className="orange">.</span></h2>
-          </div>
-          <span className="growth-pill"><ArrowUpRight size={14} />+18.4%</span>
-        </div>
-        <div className="compare-controls">
-          {(Object.keys(compareData) as CompareMonth[]).map((option) => (
-            <button
-              key={option}
-              className={month === option ? 'selected' : ''}
-              onClick={() => setMonth(option)}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
-        <div className="line-chart-wrap">
-          <svg viewBox="0 0 320 130" role="img" aria-label={`Sales compared with ${month}`}>
-            <path className="line-grid" d="M8 20H320M8 66H320M8 112H320" />
-            <polyline className="line-previous" points="8,93 60,88 112,96 164,77 216,84 268,68 320,74" />
-            <motion.polyline 
-              className="line-current" 
-              points={points}
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 1.5, ease: "easeInOut" }}
-            />
-            <circle className="line-dot" cx="320" cy={112 - values[6]} r="4" />
-          </svg>
-          <div className="line-labels">
-            <span>Week 1</span><span>Week 2</span><span>Week 3</span><span>Week 4</span>
-          </div>
-        </div>
-        <div className="line-legend">
-          <span><i className="current-dot" /> September 2026</span>
-          <span><i className="previous-dot" /> {month}</span>
-          <strong>৳184,260 total sales</strong>
-        </div>
-      </motion.section>
-      
-      <div className="secondary-dashboard-grid">
-        <YearlySales />
-        <IncomeExpense />
-      </div>
-    </>
-  );
-}
-
-function YearlySales() {
-  const values = [18, 30, 22, 43, 36, 65, 61, 92, 86, 96];
-  const points = values.map((value, index) => `${index * 31 + 8},${112 - value}`).join(' ');
-
-  return (
-    <motion.section 
-      className="panel yearly-panel"
-      whileHover={{ y: -3, boxShadow: "0 12px 28px rgba(28,28,28,.055)" }}
-    >
+    <motion.section className="panel compare-panel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
       <div className="panel-heading">
         <div>
-          <span className="section-number">02 / LONG VIEW</span>
-          <h2>Yearly sales<span className="orange">.</span></h2>
+          <span className="section-number">01 / SALES COMPARISON</span>
+          <h2>Sales against {month}<span className="orange">.</span></h2>
         </div>
-        <span className="pill">2026</span>
+        <span className="growth-pill"><ArrowUpRight size={14} />+18.4%</span>
       </div>
-      <div className="yearly-chart">
-        <svg viewBox="0 0 290 130" role="img" aria-label="Yearly sales trend">
-          <path className="line-grid" d="M8 20H290M8 66H290M8 112H290" />
-          <motion.polyline 
-            className="yearly-line" 
-            points={points}
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 2, ease: "easeInOut" }}
-          />
-          <polygon className="yearly-area" points={`8,112 ${points} 287,112`} />
-        </svg>
-        <div className="year-labels">
-          <span>Jan</span><span>Mar</span><span>May</span><span>Jul</span><span>Sep</span><span>Nov</span>
+      <div className="compare-controls">
+        {(Object.keys(compareData) as CompareMonth[]).map((option) => (
+          <button key={option} className={month === option ? 'selected' : ''} onClick={() => setMonth(option)}>
+            {option}
+          </button>
+        ))}
+      </div>
+      <div className="bar-chart-summary">
+        <strong>{money(184260)}</strong>
+        <span>Current period sales<br /><small>{labels[hovered]} selected</small></span>
+      </div>
+      <div className="interactive-bars" role="img" aria-label={`Sales for ${month}`}>
+        <div className="interactive-axis">
+          <span>৳40k</span><span>৳20k</span><span>৳0</span>
+        </div>
+        <div className="interactive-plot">
+          <div className="bar-grid-lines"><i /><i /><i /></div>
+          <div className="interactive-bar-list">
+            {values.map((value, index) => (
+              <button key={`${month}-${index}`} className={hovered === index ? 'hovered' : ''} onMouseEnter={() => setHovered(index)} onFocus={() => setHovered(index)} onClick={() => setHovered(index)} aria-label={`${labels[index]} sales ${money(value * 500)}`}>
+                <span className="interactive-bar" style={{ height: `${value}%` }} />
+                <span>{labels[index]}</span>
+                <em>{money(value * 500)}</em>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
-      <div className="yearly-total">
-        <span>Sales so far</span>
-        <strong>৳184,260</strong>
+      <div className="bar-chart-legend">
+        <span><i />{month}</span>
+        <strong>{labels[hovered]} · {money(values[hovered] * 500)}</strong>
       </div>
     </motion.section>
   );
 }
-
-function IncomeExpense() {
-  return (
-    <div className="income-expense">
-      <motion.section 
-        className="panel mini-chart-card"
-        whileHover={{ y: -3, boxShadow: "0 12px 28px rgba(28,28,28,.055)" }}
-      >
-        <div className="mini-card-head">
-          <strong>Incomes</strong>
-          <span>Weekly⌄</span>
-        </div>
-        <div className="pie income-pie" />
-        <div className="mini-legend">
-          <span><i className="legend-green" />Electronics</span>
-          <span><i className="legend-yellow" />Accessories</span>
-          <span><i className="legend-dark" />Software</span>
-          <span><i className="legend-sage" />Maintenance</span>
-        </div>
-      </motion.section>
-      
-      <motion.section 
-        className="panel mini-chart-card"
-        whileHover={{ y: -3, boxShadow: "0 12px 28px rgba(28,28,28,.055)" }}
-      >
-        <div className="mini-card-head">
-          <strong>Expenses</strong>
-          <span>Weekly⌄</span>
-        </div>
-        <div className="pie expense-pie">
-          <b>Total<br />100%</b>
-        </div>
-        <div className="mini-legend">
-          <span><i className="legend-yellow" />Marketing</span>
-          <span><i className="legend-green" />Salaries</span>
-          <span><i className="legend-red" />Office rent</span>
-          <span><i className="legend-sage" />Logistics</span>
-        </div>
-      </motion.section>
-    </div>
-  );
-}
-
 
 function StatsAndActions() {
   const { products, setActive, setModal } = useAppStore();
@@ -225,12 +131,48 @@ function StatsAndActions() {
 
 export function Overview() {
   const [compareMonth, setCompareMonth] = useState<CompareMonth>('August 2026');
+  const { sales, setActive } = useAppStore();
 
   return (
     <>
       <StatsAndActions />
-      <LineComparison month={compareMonth} setMonth={setCompareMonth} />
+      <SalesBars month={compareMonth} setMonth={setCompareMonth} />
+      <motion.section className="panel activity-panel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
+        <div className="panel-heading">
+          <div>
+            <span className="section-number">02 / THE EVERYDAY DETAILS</span>
+            <h2>Recent sales<span className="orange">.</span></h2>
+          </div>
+          <button className="text-button" onClick={() => setActive('POS / Checkout')}>
+            New sale
+            <Plus size={16} />
+          </button>
+        </div>
+        <div className="table-scroll">
+          <table className="ledger">
+            <thead>
+              <tr>
+                <th>INVOICE</th>
+                <th>ITEMS</th>
+                <th>PAYMENT</th>
+                <th>TIME</th>
+                <th className="amount">TOTAL</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sales.map((sale) => (
+                <motion.tr key={sale.id} whileHover={{ backgroundColor: '#f4f5ef' }}>
+                  <td><strong>{sale.invoice}</strong></td>
+                  <td>{sale.items}</td>
+                  <td>{sale.method}</td>
+                  <td className="muted">{sale.time}</td>
+                  <td className="amount"><strong>{money(sale.total)}</strong></td>
+                </motion.tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </motion.section>
     </>
   );
 }
-

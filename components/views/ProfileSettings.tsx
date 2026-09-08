@@ -87,3 +87,4 @@ export function ProfileSettings() {
     </motion.section>
   );
 }
+

@@ -64,7 +64,7 @@ function ProductRow({ product, index }: { product: Product, index: number }) {
 }
 
 export function Products() {
-  const { products, query, setQuery } = useAppStore();
+  const { products, query, setQuery, setModal } = useAppStore();
   
   const filtered = products.filter((product) =>
     `${product.name} ${product.sku} ${product.category}`
@@ -83,7 +83,10 @@ export function Products() {
           <span className="section-number">INVENTORY DIRECTORY</span>
           <h2>Products & stock<span className="orange">.</span></h2>
         </div>
-        <label className="search-field">
+        <span className="pill">{products.length} products</span>
+      </div>
+      <div className="table-tools" style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '24px' }}>
+        <label className="search-field" style={{ flex: 1 }}>
           <input
             type="search"
             value={query}
@@ -92,6 +95,13 @@ export function Products() {
           />
           <kbd>/</kbd>
         </label>
+        <button
+          className="btn primary small-btn"
+          onClick={() => setModal('product')}
+        >
+          <Plus size={15} />
+          Add product
+        </button>
       </div>
       <div className="table-scroll">
         <table className="ledger">
@@ -115,3 +125,4 @@ export function Products() {
     </motion.section>
   );
 }
+

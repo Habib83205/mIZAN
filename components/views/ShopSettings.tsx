@@ -78,3 +78,4 @@ export function ShopSettings() {
     </motion.section>
   );
 }
+
