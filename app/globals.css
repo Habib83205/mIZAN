@@ -64,3 +64,22 @@ button,a,input,.panel,.stat-card,.quick-action-grid button,.product-swatch,.head
 @keyframes riseIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@keyframes cardIn{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}@keyframes popIn{from{opacity:0;transform:scale(.75)}to{opacity:1;transform:scale(1)}}@keyframes modalIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes navSettle{from{transform:scale(.98)}to{transform:scale(1)}}@keyframes notificationPing{0%,75%,100%{transform:scale(1)}82%{transform:scale(1.15)}}@keyframes softPulse{0%,100%{box-shadow:0 0 0 rgba(91,141,96,0)}50%{box-shadow:0 0 0 5px rgba(91,141,96,.08)}}@keyframes barGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}@keyframes tooltipIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}@keyframes cameraFade{from{opacity:0}to{opacity:.68}}@keyframes scannerIcon{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.08);opacity:1}}@keyframes scanGlow{0%,100%{opacity:.45}50%{opacity:1;box-shadow:0 0 20px var(--orange)}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}.panel:hover,.stat-card:hover,.btn:hover,.main-nav button:hover,.quick-action-grid button:hover{transform:none}}
 
 .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
+
+/* Vintage Grain Effect */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+}
+
+/* Form inputs */
+.form-field { display: flex; flex-direction: column; gap: 8px; font-size: 14px; font-weight: 500; }
+.form-field span { color: #6e6e6e; }
+.input-with-icon { position: relative; display: flex; align-items: center; }
+.input-with-icon svg { position: absolute; left: 12px; color: #878782; }
+.input-with-icon input { width: 100%; padding: 12px 14px 12px 38px; border: 1px solid #d0cfc9; border-radius: 12px; background: #fdfef8; font-size: 16px; transition: all 0.2s; }
+.input-with-icon input:focus { outline: none; border-color: #1c1c1c; box-shadow: 0 0 0 3px rgba(28,28,28,0.1); }
