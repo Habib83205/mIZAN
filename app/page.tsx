@@ -126,36 +126,46 @@ function AppShell() {
       <Dialog open={modal !== null} onOpenChange={(open) => { if (!open) setModal(null); }}>
         <DialogContent className="mess-dialog">
           {modal === 'receive' && (
-            <form onSubmit={handleReceiveStock}>
+            <form className="entry-form" onSubmit={handleReceiveStock}>
               <DialogTitle>Receive incoming stock</DialogTitle>
               <DialogDescription>Add units to an existing product using its SKU.</DialogDescription>
-              <label className="dialog-field"><span>Product SKU</span><input name="sku" required placeholder="e.g. MZN-101" autoFocus /></label>
-              <label className="dialog-field"><span>Units received</span><input type="number" name="quantity" required placeholder="0" min="1" /></label>
-              <div className="dialog-actions">
+              <label><span>Product SKU</span><input name="sku" required placeholder="e.g. MZN-101" autoFocus /></label>
+              <label><span>Units received</span><input type="number" name="quantity" required placeholder="0" min="1" /></label>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
                 <button type="button" className="text-button" onClick={() => setModal(null)}>Cancel</button>
                 <button type="submit" className="btn primary">Receive stock</button>
               </div>
             </form>
           )}
           {modal === 'product' && (
-            <form onSubmit={saveProduct}>
+            <form className="entry-form" onSubmit={saveProduct}>
               <DialogTitle>Add new product</DialogTitle>
               <DialogDescription>Create a new item in your inventory.</DialogDescription>
-              <div className="product-entry-tabs">
-                <button type="button" className={productEntryMode === 'scan' ? 'active' : ''} onClick={() => setProductEntryMode('scan')}>Scan Barcode</button>
-                <button type="button" className={productEntryMode === 'manual' ? 'active' : ''} onClick={() => setProductEntryMode('manual')}>Manual Entry</button>
+              <div className="entry-mode-tabs">
+                <button type="button" className={productEntryMode === 'scan' ? 'selected' : ''} onClick={() => setProductEntryMode('scan')}>Scan Barcode</button>
+                <button type="button" className={productEntryMode === 'manual' ? 'selected' : ''} onClick={() => setProductEntryMode('manual')}>Manual Entry</button>
               </div>
-              <label className="dialog-field"><span>Product name</span><input name="name" required placeholder="e.g. Linen wrap skirt" autoFocus /></label>
+              <label><span>Product name</span><input name="name" required placeholder="e.g. Linen wrap skirt" autoFocus /></label>
               {productEntryMode === 'scan' ? (
-                <label className="dialog-field"><span>Barcode</span><div className="scan-dialog-camera"><ScanLine size={24} /></div><input type="hidden" name="barcode" value="MZN-NEW" /><div className="scan-dialog-result"><Check size={14} /> MZN-NEW detected</div></label>
+                <label>
+                  <span>Barcode</span>
+                  <div className="scan-dialog-camera">
+                    <ScanLine size={24} />
+                    <div className="scan-line-animation" />
+                  </div>
+                  <input type="hidden" name="barcode" value="MZN-NEW" />
+                  <div className="scan-dialog-result">
+                    <button type="button"><Check size={14} /> <span>MZN-NEW detected</span></button>
+                  </div>
+                </label>
               ) : (
-                <label className="dialog-field"><span>SKU / Code</span><input name="sku" required placeholder="e.g. MZN-150" /></label>
+                <label><span>SKU / Code</span><input name="sku" required placeholder="e.g. MZN-150" /></label>
               )}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <label className="dialog-field"><span>Starting stock</span><input type="number" name="stock" required placeholder="0" min="0" /></label>
-                <label className="dialog-field"><span>Unit price</span><input type="number" name="price" required placeholder="0" min="1" /></label>
+              <div className="form-row">
+                <label><span>Starting stock</span><input type="number" name="stock" required placeholder="0" min="0" /></label>
+                <label><span>Unit price</span><input type="number" name="price" required placeholder="0" min="1" /></label>
               </div>
-              <div className="dialog-actions">
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
                 <button type="button" className="text-button" onClick={() => setModal(null)}>Cancel</button>
                 <button type="submit" className="btn primary">Save product</button>
               </div>
