@@ -549,14 +549,63 @@ export default function Home() {
   }, []);
   useEffect(() => {
     if (modal !== 'scan' && !(active === 'POS / Checkout' && scannerLive)) return;
-    let stream: MediaStream | undefined;
+    let isMounted = true;
+    let controls: any;
+
     setCameraStatus('starting');
-    navigator.mediaDevices?.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false }).then((nextStream) => {
-      stream = nextStream;
-      [cameraRef.current, scannerRef.current].forEach((video) => { if (video) { video.srcObject = nextStream!; void video.play(); } });
-      setCameraStatus('live');
-    }).catch(() => setCameraStatus('blocked'));
-    return () => stream?.getTracks().forEach((track) => track.stop());
+    const videoElement = modal === 'scan' ? cameraRef.current : scannerRef.current;
+
+    if (!videoElement) {
+        setCameraStatus('blocked');
+        return;
+    }
+
+    let lastScanTime = 0;
+    let lastScanText = '';
+
+    import('@zxing/browser').then(({ BrowserMultiFormatReader }) => {
+      if (!isMounted) return;
+      const reader = new BrowserMultiFormatReader();
+      
+      reader.decodeFromConstraints(
+        { audio: false, video: { facingMode: 'environment' } },
+        videoElement,
+        (result, error) => {
+          if (result) {
+            const text = result.getText();
+            const now = Date.now();
+            // Prevent duplicate scans within 2 seconds
+            if (text !== lastScanText || now - lastScanTime > 2000) {
+              setScan(text);
+              if (modal === 'scan') {
+                setNotice('Barcode/QR detected. Confirm the product below.');
+              } else {
+                setNotice(`Scanned: ${text}`);
+              }
+              lastScanText = text;
+              lastScanTime = now;
+            }
+          }
+        }
+      ).then(c => {
+         controls = c;
+         if (isMounted) setCameraStatus('live');
+         else controls.stop();
+      }).catch(err => {
+         console.error('Camera access error:', err);
+         if (isMounted) setCameraStatus('blocked');
+      });
+    }).catch(err => {
+        console.error('Failed to load @zxing/browser:', err);
+        if (isMounted) setCameraStatus('blocked');
+    });
+
+    return () => {
+      isMounted = false;
+      if (controls) {
+        controls.stop();
+      }
+    };
   }, [modal, active, scannerLive]);
   const lowStock = products.filter(
     (product) => product.stock <= product.reorder,
